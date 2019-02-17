@@ -33,7 +33,6 @@ router.post('/accountadd', (req, res) => {
 router.get('/accountlist', (req, res) => {
     //    创建sql语句
     const sqlStr = 'select * from account order by ctime desc';
-    console.log(sqlStr)
     // 执行sql语句
     connection.query(sqlStr, (err, data) => {
         if (err) throw err;
@@ -43,22 +42,66 @@ router.get('/accountlist', (req, res) => {
 })
 
 // 删除功能的实现
-router.get('/accountdel',(req,res)=>{
-//   接收ID
-   let{id}=req.query
-//    创建sql语句
-  const sqlStr=`delete from account where id=${id}`
-// 执行sql
-connection.query(sqlStr,(err,data)=>{
-    if(err) throw err;
-    if(data.affectedRows >0){
-        res.send({"error_code":0,"reason":"删除数据成功"})
-       
-    }else{
-        res.send({"error_code":0,"reason":"删除数据失败"})
-    }
-})
+router.get('/accountdel', (req, res) => {
+    //   接收ID
+    let { id } = req.query
+    //    创建sql语句
+    const sqlStr = `delete from account where id=${id}`
+    // 执行sql
+    connection.query(sqlStr, (err, data) => {
+        if (err) throw err;
+        if (data.affectedRows > 0) {
+            res.send({ "error_code": 0, "reason": "删除数据成功" })
+
+        } else {
+            res.send({ "error_code": 0, "reason": "删除数据失败" })
+        }
+    })
 })
 
+// 编辑功能的实现
+router.get('/accountedit', (req, res) => {
+    let { id } = req.query
+    // 创建sql语句
+    const sqlStr = `select * from account where id=${id} `
+    // 执行sql语句
+    connection.query(sqlStr, (err, data) => {
+        if (err) throw err;
+        res.send(data)
+    })
+})
 
+// 保存修改数据
+router.post('/accounteditsave', (req, res) => {
+    let { username, usergroup, editid } = req.body;
+    // 创建sql
+    const sqlStr = `update account set username='${username}',usergroup='${usergroup}' where id=${editid}`
+    //    执行sql
+    console.log(sqlStr)
+    connection.query(sqlStr, (err, data) => {
+        if (err) throw err;
+        if (data.affectedRows > 0) {
+            res.send({ "error_code": 0, "reason": "修改数据成功" })
+        } else {
+            res.send({ "error_code": 1, "reason": "修改数据失败" })
+        }
+    })
+})
+// 批量删除功能
+router.get('/batchremove',(req,res)=>{
+    let {selectid} =req.query
+    console.log(selectid)
+    // 创建aql语句
+    const sqlStr=`delete from account where id in (${selectid})`;
+    console.log(sqlStr)
+    // 执行sql语句
+   connection.query(sqlStr,(err,data)=>{
+       if (err) throw err;
+      if (data.affectedRows >0 ){
+        res.send({"error_code": 0, "reason":"批量删除成功"})
+      }else{
+        res.send({"error_code": 1, "reason":"批量删除失败"})
+      }
+   })
+})
 module.exports = router;

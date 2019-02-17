@@ -8,7 +8,6 @@
         <div class="text item">
           <el-table
             :data="tableData"
-            stripe
             style="width: 100%">
             <el-table-column
             prop="goodscode"
@@ -132,31 +131,27 @@ export default {
   }
   .el-card {
     .el-card__header {
-       background: #f1f1f1;
+      background: #f1f1f1;
       font-size: 20px;
       color: #333;
       font-weight: bold;
-
     }
     .el-table {
       .has-gutter {
         tr {
           color: #333;
           font-size: 16px;
-          th{
-             text-align: center; 
+          th {
+            text-align: center;
           }
-          
         }
       }
       .el-table__body-wrapper {
         .el-table__body {
           tbody {
             tr {
-              background: #f1f1f1;
-              border: 1px solid #ccc;
-              td{
-                  text-align: center;
+              td {
+                text-align: center;
               }
             }
           }
