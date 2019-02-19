@@ -34,14 +34,14 @@
             <el-menu-item index="StatisticalControl">统计管理</el-menu-item>
             <el-menu-item index="salestatistics">销售统计</el-menu-item>
         </el-submenu>
-            <el-submenu index="5">
+        <el-submenu index="5">
             <template slot="title">
             <i class="el-icon-edit"></i>进货管理
             </template>
             <el-menu-item index="stockcontrol">库存管理</el-menu-item>
             <el-menu-item index="stockadd">添加库存</el-menu-item>
         </el-submenu>
-            <el-submenu index="6">
+        <el-submenu index="6">
             <template slot="title">
             <i class="el-icon-edit-outline"></i>出货管理
             </template>
@@ -53,8 +53,8 @@
             <template slot="title">
             <i class="el-icon-edit-outline"></i>会员管理
             </template>
-            <el-menu-item index="membermanage">添加账号</el-menu-item>
-            <el-menu-item index="memberadd">账号管理</el-menu-item>
+            <el-menu-item index="memberadd">添加账号</el-menu-item>
+            <el-menu-item index="membermanage">账号管理</el-menu-item>
         </el-submenu>
         </el-menu>
 </template>
