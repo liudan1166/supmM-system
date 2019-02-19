@@ -53,8 +53,8 @@
             <template slot="title">
             <i class="el-icon-edit-outline"></i>会员管理
             </template>
-            <el-menu-item index="membermanage">添加账号</el-menu-item>
-            <el-menu-item index="memberadd">账号管理</el-menu-item>
+            <el-menu-item index="membermanage">账号管理</el-menu-item>
+            <el-menu-item index="memberadd">添加账号</el-menu-item>
         </el-submenu>
         </el-menu>
 </template>

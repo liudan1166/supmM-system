@@ -21,27 +21,28 @@
     </div>
 </template>
 <script>
+import qs from "qs";
 export default {
   data() {
-      const checkPass = str =>{
-          var specialKey =
+    const checkPass = str => {
+      var specialKey =
         "[`~!#$^&*()=|{}':;',\\[\\].<>/?~！#￥……&*（）——|{}【】‘；：”“'。，、？]‘'";
-        for (var i=0;i<str.length;i++){
-            if(specialKey.indexOf(str.substr(i,1))!=-1){
-                return false;
-            }
+      for (var i = 0; i < str.length; i++) {
+        if (specialKey.indexOf(str.substr(i, 1)) != -1) {
+          return false;
         }
-        return true;
       }
+      return true;
+    };
     var Pass = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入密码"));
-      } else if(value.length<6 || value.length>10){
-          callback(new Error('密码长度为6 - 10位'))
-      }else if(!checkPass(value)){
-            callback(new Error('密码不能包含特殊字符'))
-      }else{
-          callback()
+      } else if (value.length < 6 || value.length > 10) {
+        callback(new Error("密码长度为6 - 10位"));
+      } else if (!checkPass(value)) {
+        callback(new Error("密码不能包含特殊字符"));
+      } else {
+        callback();
       }
     };
     return {
@@ -62,17 +63,37 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          alert("成功！可以提交给后端");
-        //   收集账号和密码
-        let params ={
-            username:this.loginForm.username,
-            password:this.loginForm.password
-        }
-        // 发送请求给后端验证是否正确
-        // 跳转到首页
-        this.$router.push("/")
+          //   收集账号和密码
+          let params = {
+            username: this.loginForm.username,
+            password: this.loginForm.password
+          };
+          // 发送请求给后端验证是否正确
+          this.axios
+            .post("http://127.0.0.1:886/login/checklogin", qs.stringify(params))
+            .then(response => {
+              let { error_code, reason ,token,username} = response.data;
+              if (error_code === 0) {
+                // 将token存在浏览器中
+                window.localStorage.setItem("token", token);
+                // 将用户名存在浏览器
+                window.localStorage.setItem("username", username);
+
+                // 弹成功提示
+                this.$message({
+                  type: "success",
+                  message: reason
+                });
+                // 跳转到首页
+                this.$router.push("/");
+              } else {
+                this.$message.error(reason);
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            });
         } else {
-         alert("失败！不可以提交给后端")
           return false;
         }
       });

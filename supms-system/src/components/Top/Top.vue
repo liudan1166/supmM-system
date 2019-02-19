@@ -15,13 +15,13 @@
                         </div></el-col>
                     <el-col :span="10">
                         <div >
-                          <el-dropdown >
+                          <el-dropdown @command="handleCommand">
                             <span class="el-dropdown-link"  >
                                 {{username}}<i class="el-icon-arrow-down el-icon--right"></i>
                             </span>
                             <el-dropdown-menu slot="dropdown" >
-                                <el-dropdown-item>个人中心</el-dropdown-item>
-                                <el-dropdown-item>退出</el-dropdown-item>
+                                <el-dropdown-item command="personal">个人中心</el-dropdown-item>
+                                <el-dropdown-item command="logout">退出</el-dropdown-item>
                             </el-dropdown-menu>
                             </el-dropdown>
                         </div>
@@ -34,11 +34,30 @@
 </template>
 <script>
 export default {
-     data(){
-      return {
-         username: "李寻欢",
-         avatarUrl: 'http://127.0.0.1:8080/avatar.jpg'
+  data() {
+    return {
+      username: "李寻欢",
+      avatarUrl: "http://127.0.0.1:8080/avatar.jpg"
+    };
+  },
+  methods: {
+    handleCommand(command) {
+      if (command === "logout") {
+        // 清除token
+        window.localStorage.removeItem("token");
+        this.$message({
+          type: "success",
+          message: "欢迎回来!"
+        });
+        setImmediate(()=>{
+            // 跳转登录页面
+            this.$router.push('/login')
+        },1000)
       }
+    }
+  },
+  created(){
+      this.username =window.localStorage.getItem('username')
   }
 };
 </script>

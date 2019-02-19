@@ -52,7 +52,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="currentPage"
-      :page-sizes="[3, 5, 7, 10]"
+      :page-sizes="[5, 7, 8, 9]"
       :page-size="pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
@@ -96,13 +96,13 @@ export default {
       flag: false,
       editForm: {
         username: "",
-        usergroup: "",
+        usergroup: ""
       },
       editid: "",
       selectedAccount: [],
-      currentPage:1,//当前页数，支持 .sync 修饰符
-      pageSize:5,//每页显示条目个数，支持 .sync 修饰符
-      total:11,//总条目数
+      currentPage: 1, //当前页数，支持 .sync 修饰符
+      pageSize: 9, //每页显示条目个数，支持 .sync 修饰符
+      total: 11, //总条目数
       rules: {
         username: [
           { required: true, message: "请输入用户名", trigger: "blur" },
@@ -116,7 +116,7 @@ export default {
   },
   // 创建钩子函数。自动触发，发送ajax请求获取数据
   created() {
-    this.getAccountList();
+    this.getAccountListByPage()
   },
 
   methods: {
@@ -133,16 +133,41 @@ export default {
     //       console.log(err);
     //     });
     // },
-    getAccountListByPage(){
+    getAccountListByPage() {
       // 收集当前页码和每页条数
-      let pageSize= this.pageSize;
+      let pageSize = this.pageSize;
       let currentPage = this.currentPage;
-      this.axios.get('http://127.0.0.1:886/account/getAccountListByPage',{
-        params:{
+      this.axios.get("http://127.0.0.1:886/account/getAccountListByPage", {
+        params: {
           pageSize,
           currentPage
         }
-      })
+        })
+          .then(response => {
+            let {total,data}=response.data
+             this.total =total;
+             this.tableData = data;
+             if(!data.length && this.currentPage !==1){
+               this.currentPage -= 1;
+               this.getAccountListByPage()
+             }
+          })
+          .catch(err => {
+            console.log(err);
+          })
+    },
+    // 分页
+    // 获取每页的条数值
+    handleSizeChange(val) {
+      this.pageSize = val;
+      console.log(`每页 ${val} 条`);
+      this.getAccountListByPage();
+    },
+    // 获取每页值
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      console.log(`当前页: ${val}`);
+      this.getAccountListByPage();
     },
     handleSelectionChange(val) {
       this.selectedAccount = val;
@@ -167,7 +192,7 @@ export default {
                   type: "success",
                   message: reason
                 });
-                this.getAccountList();
+               this.getAccountListByPage()
               } else {
                 this.$message.error(reason);
               }
@@ -220,7 +245,7 @@ export default {
               type: "success",
               message: reason
             });
-            this.getAccountList();
+            this.getAccountListByPage()
           } else {
             // 弹出失败的提示
             this.$message.error(reason);
@@ -231,18 +256,7 @@ export default {
           console.log(err);
         });
     },
-    // 分页
-    // 获取每页的条数值
-    handleSizeChange(val) {
-      this.pageSize = val
-      console.log(`每页 ${val} 条`);
-
-    },
-    // 获取每页值
-    handleCurrentChange(val) {
-      this.currentPage = val
-      console.log(`当前页: ${val}`);
-    },
+    
     // 批量删除
     batchremove() {
       let selectid = this.selectedAccount.map(v => v.id);
@@ -270,7 +284,7 @@ export default {
                   type: "success",
                   message: reason
                 });
-                this.getAccountList();
+               this.getAccountListByPage()
               } else {
                 this.$message.error(reason);
               }

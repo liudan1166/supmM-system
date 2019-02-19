@@ -86,22 +86,79 @@ router.post('/accounteditsave', (req, res) => {
             res.send({ "error_code": 1, "reason": "修改数据失败" })
         }
     })
+});
+
+// 分页
+router.get('/getAccountListByPage', (req, res) => {
+    let { pageSize, currentPage } = req.query;
+    console.log(pageSize, currentPage);
+    // 默认值
+    pageSize = pageSize ? pageSize : 3;
+    currentPage = currentPage ? currentPage : 1;
+    // 创建sql语句
+    let sqlStr = "select * from account order by ctime desc";
+    // 执行
+    connection.query(sqlStr, (err, data) => {
+        if (err) throw err;
+        let total = data.length;
+        // 跳过n页
+        let n = (currentPage - 1) * pageSize;
+        sqlStr += ` limit ${n},${pageSize}`;
+        console.log(sqlStr);
+        connection.query(sqlStr, (err, data) => {
+            if (err) throw err;
+            res.send({ total, data })
+        })
+    })
 })
 // 批量删除功能
-router.get('/batchremove',(req,res)=>{
-    let {selectid} =req.query
+router.get('/batchremove', (req, res) => {
+    let { selectid } = req.query
     console.log(selectid)
     // 创建aql语句
-    const sqlStr=`delete from account where id in (${selectid})`;
+    const sqlStr = `delete from account where id in (${selectid})`;
     console.log(sqlStr)
     // 执行sql语句
-   connection.query(sqlStr,(err,data)=>{
-       if (err) throw err;
-      if (data.affectedRows >0 ){
-        res.send({"error_code": 0, "reason":"批量删除成功"})
-      }else{
-        res.send({"error_code": 1, "reason":"批量删除失败"})
+    connection.query(sqlStr, (err, data) => {
+        if (err) throw err;
+        if (data.affectedRows > 0) {
+            res.send({ "error_code": 0, "reason": "批量删除成功" })
+        } else {
+            res.send({ "error_code": 1, "reason": "批量删除失败" })
+        }
+    })
+})
+
+// 原密码验证
+router.get('/checkoldpwd', (req, res) => {
+    let { username, oldpwd } = req.query
+    const sqlStr = `select * from account where username='${username}' and password = '${oldpwd}'`
+    console.log(sqlStr)
+    connection.query(sqlStr, (err, data) => {
+        if (err) throw err;
+        if (data.length) {
+            res.send({ "error_code": 0, "reason": "原密码正确!" });
+        } else {
+            res.send({ "error_code": 1, "reason": "原密码错误!" });
+        }
+    })
+});
+
+
+// 保存修改密码
+router.post('/savenewpwd',(req,res)=>{
+   let{ username,password,newpassword}=req.body;
+   const sqlStr =`update account set password ='${newpassword}' where username='${username}' and password='${password}'`
+console.log(sqlStr)
+connection.query(sqlStr,(err,data)=>{
+    if(err) throw err;
+    if (data.affectedRows > 0) {
+        // 成功
+        res.send({"error_code": 0, "reason":"密码修改成功!请重新登录!"})
+      } else {
+        // 失败
+        res.send({"error_code": 1, "reason":"密码修改失败!"})
       }
-   })
+})
 })
 module.exports = router;

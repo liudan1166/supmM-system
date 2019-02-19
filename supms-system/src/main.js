@@ -11,6 +11,25 @@ Vue.use(ElementUI);
 // 将axios挂在Vue原型上
 Vue.prototype.axios = axios;
 
+// 全局路由守卫
+router.beforeEach((to, from, next) => {
+  // 获取token
+  const token = window.localStorage.getItem('token');
+  // 有token
+  if (token) {
+    // 直接放行
+    next();
+  } else {  // 否则是没有
+    // 如果去的是登录页
+    if (to.path === '/login') {
+      // 直接放行
+      next();
+    } else {
+      // 跳转到登录页
+      return next({"path": "/login"})
+    }
+  }
+})
 Vue.config.productionTip = false
 
 new Vue({
